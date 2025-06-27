@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Dashboard | SmartResume{% endblock %}
+
+{% block content %}
+<style>
+    /* Ensures carousel images keep aspect ratio and fit nicely */
+    .carousel-item img {
+        object-fit: cover;
+        height: 60vh; /* 60% of viewport height */
+        width: 100%;
+    }
+
+    @media (max-width: 768px) {
+        .carousel-item img {
+            height: 40vh; /* smaller height on mobile */
+        }
+    }
+
+    /* Make the dashboard container fill most of the viewport height */
+    .dashboard-container {
+        min-height: calc(100vh - 80px); /* adjust 80px if header/footer differ */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+</style>
+
+<div class="container-fluid py-4 dashboard-container">
+    <!-- Welcome Text -->
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold">Welcome to SmartResume</h1>
+        <p class="lead text-muted">Create professional resumes that get noticed.</p>
+        <a href="{% url 'create_resume' %}" class="btn btn-success btn-lg shadow">
+            <i class="fas fa-plus me-2"></i> Build My Resume
+        </a>
+    </div>
+
+    <!-- Carousel Section -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-10">
+            <div id="resumeCarousel" class="carousel slide shadow rounded" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img src="{% static 'images/resume1.png' %}" class="d-block w-100 rounded" alt="Resume Example 1">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="{% static 'images/resume2.png' %}" class="d-block w-100 rounded" alt="Resume Example 2">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="{% static 'images/resume3.png' %}" class="d-block w-100 rounded" alt="Resume Example 3">
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#resumeCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#resumeCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Cards -->
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow border-0 h-100 text-center">
+                <div class="card-body">
+                    <i class="fas fa-user-edit fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Create Resume</h5>
+                    <p class="card-text">Start building your resume from a template.</p>
+                    <a href="{% url 'create_resume' %}" class="btn btn-outline-primary btn-sm">Start Now</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow border-0 h-100 text-center">
+                <div class="card-body">
+                    <i class="fas fa-folder-open fa-3x text-info mb-3"></i>
+                    <h5 class="card-title">My Resumes</h5>
+                    <p class="card-text">Access your saved resumes anytime.</p>
+                    <a href="{% url 'resume_list' %}" class="btn btn-outline-info btn-sm">View Resumes</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow border-0 h-100 text-center">
+                <div class="card-body">
+                    <i class="fas fa-cogs fa-3x text-secondary mb-3"></i>
+                    <h5 class="card-title">Profile Settings</h5>
+                    <p class="card-text">Update your personal info and preferences.</p>
+                    <a href="#" class="btn btn-outline-secondary btn-sm">Edit Profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
