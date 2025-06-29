@@ -39,7 +39,7 @@ class ResumeCreateView(LoginRequiredMixin, CreateView):
     """
     model = Resume
     form_class = ResumeForm
-    template_name = 'resumes/resume_form.html'
+    template_name = 'resumes/resume_create.html'
     success_url = reverse_lazy('resume_list')
 
     def form_valid(self, form):
@@ -48,12 +48,12 @@ class ResumeCreateView(LoginRequiredMixin, CreateView):
         messages.success(self.request, "Resume created successfully.")
         logger.info(f"User {self.request.user.username} created a new resume.")
         return super().form_valid(form)
-    
+
     def form_invalid(self, form):
         logger.error(f"User {self.request.user.username} submitted an invalid resume form.")
         messages.error(self.request, "There was an error creating your resume. Please correct the errors below.")
         return super().form_invalid(form)
-    
+
 
 class ResumeUpdateView(LoginRequiredMixin, UpdateView):
     """
