@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}Create Resume{% endblock %}
+
+{% block content %}
+<div class="mt-5">
+    <div class="card shadow-sm border-0 rounded">
+        <div class="card-body bg-body-secondary">
+            {% if messages %}
+                <div class="alert alert-info" role="alert">
+                    {% for message in messages %}
+                        {{ message }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <h2 class="card-title mb-4 text-center">Create Resume</h2>
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        {{ form.full_name|as_crispy_field }}
+                    </div>
+                    <div class="col-md-4">
+                        {{ form.email|as_crispy_field }}
+                    </div>
+                    <div class="col-md-4">
+                        {{ form.phone|as_crispy_field }}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    {{ form.address|as_crispy_field }}
+                </div>
+                <div class="mb-3">
+                    {{ form.summary|as_crispy_field }}
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg w-100 mt-3">
+                    <i class="bi bi-file-earmark-plus"></i> Create Resume
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
