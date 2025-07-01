@@ -1,14 +1,16 @@
-from django import forms
-from resumes.models import Experience, Skill
+from django.forms import inlineformset_factory
+from resumes.models import Experience, Skill, Resume
 
-class ExperienceForm(forms.ModelForm):
-    class Meta:
-        model = Experience
-        fields = '__all__'
-        exclude = ['resume']
+ExperienceFormSet = inlineformset_factory(
+    Resume, Experience,
+    fields=['company', 'position', 'start_date', 'end_date', 'description'],
+    extra=1,
+    can_delete=True
+)
 
-class SkillForm(forms.ModelForm):
-    class Meta:
-        model = Skill
-        fields = '__all__'
-        exclude = ['resume']
+SkillFormSet = inlineformset_factory(
+    Resume, Skill,
+    fields=['name', 'proficiency'],
+    extra=1,
+    can_delete=True
+)
