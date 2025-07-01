@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Your Resumes{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Your Resumes</h2>
+        <a href="{% url 'create_resume' %}" class="btn btn-success">
+            <i class="fas fa-plus-square"></i>
+            Create New Resume
+        </a>
+    </div>
+
+    {% if resumes %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for resume in resumes %}
+                <div class="col">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">{{ resume.full_name }}</h5>
+                            <p class="card-text mb-1"><strong>Email:</strong> {{ resume.email }}</p>
+                            <p class="card-text mb-1"><strong>Phone:</strong> {{ resume.phone }}</p>
+                            <p class="card-text mb-1"><strong>Address:</strong> {{ resume.address|truncatechars:50 }}</p>
+                            <p class="card-text"><strong>Summary:</strong> {{ resume.summary|truncatewords:20 }}</p>
+                            <a href="{% url 'resume_details' resume.pk %}" class="btn btn-outline-primary btn-sm mt-2">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-warning mt-4" role="alert">
+            You have no resumes yet. Start by creating one.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
