@@ -6,15 +6,16 @@ from django.views.generic import (
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.template.loader import get_template
 from django.http import HttpResponse
 from weasyprint import HTML
 # local imports for models and forms
 from resumes.models import Resume
-from resumes.forms.resume import ResumeForm
-from resumes.forms.education import EducationFormSet
-from resumes.forms.experience import ExperienceFormSet, SkillFormSet
+from resumes.forms.resume import (
+    ResumeForm, EducationFormSet,
+    ExperienceFormSet, SkillFormSet
+)
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -57,49 +58,66 @@ class ResumeCreateView(LoginRequiredMixin, CreateView):
     template_name = 'resumes/resume_create.html'
     success_url = reverse_lazy('resume_list')
 
-    def get(self, request, *args, **kwargs):
-        form = ResumeForm()
-        education_formset = EducationFormSet()
-        experience_formset = ExperienceFormSet()
-        skill_formset = SkillFormSet()
-        return render(request, self.template_name, {
-            'form': form,
-            'education_formset': education_formset,
-            'experience_formset': experience_formset,
-            'skill_formset': skill_formset
-        })
+    def get_formset_kwargs(self, prefix):
+        """Helper method to get consistent formset kwargs"""
+        return {
+            'instance': self.object,
+            'prefix': prefix,
+            'data': self.request.POST if self.request.method == 'POST' else None,  # noqa
+            'files': self.request.FILES if self.request.method == 'POST' else None  # noqa
+        }
 
-    def post(self, request, *args, **kwargs):
-        form = ResumeForm(request.POST)
-        education_formset = EducationFormSet(request.POST)
-        experience_formset = ExperienceFormSet(request.POST)
-        skill_formset = SkillFormSet(request.POST)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['education_formset'] = EducationFormSet(
+                **self.get_formset_kwargs('education'))
+            context['experience_formset'] = ExperienceFormSet(
+                **self.get_formset_kwargs('experience'))
+            context['skill_formset'] = SkillFormSet(
+                **self.get_formset_kwargs('skill'))
+        else:
+            context['education_formset'] = EducationFormSet(
+                **self.get_formset_kwargs('education'))
+            context['experience_formset'] = ExperienceFormSet(
+                **self.get_formset_kwargs('experience'))
+            context['skill_formset'] = SkillFormSet(
+                **self.get_formset_kwargs('skill'))
+        return context
 
-        if form.is_valid() and education_formset.is_valid() and experience_formset.is_valid() and skill_formset.is_valid():  # noqa
-            resume = form.save(commit=False)
-            resume.user = request.user
-            resume.save()
+    def form_valid(self, form):
+        context = self.get_context_data()
+        education_formset = context['education_formset']
+        experience_formset = context['experience_formset']
+        skill_formset = context['skill_formset']
 
-            # Bind the resume instance to related forms
-            education_formset.instance = resume
-            experience_formset.instance = resume
-            skill_formset.instance = resume
+        if all([
+            form.is_valid(),
+            education_formset.is_valid(),
+            experience_formset.is_valid(),
+            skill_formset.is_valid()
+        ]):
+            self.object = form.save(commit=False)
+            self.object.user = self.request.user
+            self.object.save()
 
+            # Save formsets
+            education_formset.instance = self.object
             education_formset.save()
+
+            experience_formset.instance = self.object
             experience_formset.save()
+
+            skill_formset.instance = self.object
             skill_formset.save()
 
-            messages.success(
-                request, "Resume and related information saved successfully.")
+            messages.success(self.request, "Resume created successfully!")
             return redirect(self.success_url)
-        else:
-            messages.error(request, "Please correct the errors below.")
-            return render(request, self.template_name, {
-                'form': form,
-                'education_formset': education_formset,
-                'experience_formset': experience_formset,
-                'skill_formset': skill_formset
-            })
+        return self.form_invalid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Please correct the errors below.")
+        return self.render_to_response(self.get_context_data(form=form))
 
 
 class ResumeUpdateView(LoginRequiredMixin, UpdateView):
@@ -141,7 +159,7 @@ class ResumeDetailsView(LoginRequiredMixin, TemplateView):
         resume = self.get_object()
         context['resume'] = resume
         context['experience'] = resume.experience.all()
-        context['education'] = resume.education.all()
+        context['education'] = resume.education_set.all()
         context['skills'] = resume.skills.all()
         return context
 
@@ -153,7 +171,7 @@ class ResumePDFView(LoginRequiredMixin, View):
         html_string = template.render({
             'resume': resume,
             'experience': resume.experience.all(),
-            'education': resume.education.all(),
+            'education': resume.education_set.all(),
             'skills': resume.skills.all()
         })
 
