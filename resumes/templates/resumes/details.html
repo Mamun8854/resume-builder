@@ -6,6 +6,14 @@
     <div class="card shadow-lg">
         <div class="card-body">
             <!-- Header -->
+            <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap">
+                <div></div>
+                <div class="text-end">
+                    <a href="{% url 'resume_pdf' resume.id %}" class="btn btn-outline-secondary mt-2" target="_blank">
+                        <i class="bi bi-file-earmark-pdf"></i> Download PDF
+                    </a>
+                </div>
+            </div>
             <div class="text-center mb-4">
                 <h1 class="display-5 fw-bold">{{ resume.full_name }}</h1>
                 <p class="text-muted mb-1">
@@ -14,10 +22,6 @@
                     <i class="bi bi-geo-alt-fill"></i> {{ resume.address }}
                 </p>
             </div>
-            <a href="{% url 'resume_pdf' resume.id %}" class="btn btn-outline-secondary" target="_blank">
-                <i class="bi bi-file-earmark-pdf"></i> Download PDF
-            </a>
-
 
             {% if resume.summary %}
             <section class="mb-5">
@@ -33,7 +37,7 @@
                     <div class="mb-4">
                         <h5 class="mb-1">{{ job.position }}</h5>
                         <p class="mb-1"><strong>{{ job.company }}</strong> &nbsp;|&nbsp; 
-                        <em>{{ job.start_date }} – {{ job.end_date }}</em></p>
+                        <em>{{ job.start_date }} – {% if job.end_date %} {{ job.end_date }} {% else %} Present{% endif %}</em></p>
                         {% if job.description %}
                             <p class="mb-0">{{ job.description }}</p>
                         {% endif %}
