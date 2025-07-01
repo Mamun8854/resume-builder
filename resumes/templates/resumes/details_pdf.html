@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ resume.full_name }}'s Resume</title>
+
+    <!-- Bootstrap CSS (WeasyPrint supports CDN if base_url is set correctly) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <style>
+        /* Set A4 size and margins for PDF */
+        @page {
+            size: A4;
+            margin: .5cm 1cm 1cm 1cm;
+        }
+
+        body {
+            font-size: 14px;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .container {
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        h1, h4, h6 {
+            margin-bottom: 0.5rem;
+        }
+
+        .badge {
+            font-size: 0.9rem;
+        }
+
+        .section {
+            margin-bottom: 2rem;
+        }
+
+        .text-muted i {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card shadow-none border-0">
+        <div class="card-body">
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <h1 class="display-5 fw-bold">{{ resume.full_name }}</h1>
+                <p class="text-muted mb-1">
+                    {{ resume.email }} &nbsp;|&nbsp;
+                    {{ resume.phone }} &nbsp;|&nbsp;
+                    {{ resume.address }}
+                </p>
+            </div>
+
+            {% if resume.summary %}
+            <section class="section">
+                <h4 class="border-bottom pb-2 mb-3">Profile Summary</h4>
+                <p>{{ resume.summary }}</p>
+            </section>
+            {% endif %}
+
+            {% if experience %}
+            <section class="section">
+                <h4 class="border-bottom pb-2 mb-3">Work Experience</h4>
+                {% for job in experience %}
+                    <div class="mb-4">
+                        <h6 class="mb-1">{{ job.position }}</h6>
+                        <p class="mb-1"><strong>{{ job.company }}</strong> &nbsp;|&nbsp;
+                        <em>{{ job.start_date }} –{% if job.end_date %} {{ job.end_date }} {% else %} Present{% endif %}</em></p>
+                        {% if job.description %}
+                            <p class="mb-0">{{ job.description }}</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </section>
+            {% endif %}
+
+            {% if education %}
+            <section class="section">
+                <h4 class="border-bottom pb-2 mb-3">Education</h4>
+                {% for edu in education %}
+                    <div class="mb-3">
+                        <h6 class="mb-0">{{ edu.degree }}</h6>
+                        <p class="mb-0">{{ edu.institution }}</p>
+                        <small class="text-muted">{{ edu.start_year }} – {{ edu.end_year }}</small>
+                    </div>
+                {% endfor %}
+            </section>
+            {% endif %}
+
+            {% if skills %}
+            <section class="section">
+                <h4 class="border-bottom pb-2 mb-3">Skills</h4>
+                <div>
+                    {% for skill in skills %}
+                        <span class="badge bg-secondary mb-2">
+                            {{ skill.name }}
+                            {% if skill.proficiency %}
+                                <small class="text-light">({{ skill.proficiency }})</small>
+                            {% endif %}
+                        </span>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+        </div>
+    </div>
+</div>
+</body>
+</html>

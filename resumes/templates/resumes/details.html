@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}{{ resume.full_name }}'s Resume{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="card shadow-lg">
+        <div class="card-body">
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <h1 class="display-5 fw-bold">{{ resume.full_name }}</h1>
+                <p class="text-muted mb-1">
+                    <i class="bi bi-envelope-fill"></i> {{ resume.email }} &nbsp;|&nbsp;
+                    <i class="bi bi-telephone-fill"></i> {{ resume.phone }} &nbsp;|&nbsp;
+                    <i class="bi bi-geo-alt-fill"></i> {{ resume.address }}
+                </p>
+            </div>
+            <a href="{% url 'resume_pdf' resume.id %}" class="btn btn-outline-secondary" target="_blank">
+                <i class="bi bi-file-earmark-pdf"></i> Download PDF
+            </a>
+
+
+            {% if resume.summary %}
+            <section class="mb-5">
+                <h4 class="border-bottom pb-2 mb-3">Profile Summary</h4>
+                <p>{{ resume.summary }}</p>
+            </section>
+            {% endif %}
+
+            {% if experience %}
+            <section class="mb-5">
+                <h4 class="border-bottom pb-2 mb-3">Work Experience</h4>
+                {% for job in experience %}
+                    <div class="mb-4">
+                        <h5 class="mb-1">{{ job.position }}</h5>
+                        <p class="mb-1"><strong>{{ job.company }}</strong> &nbsp;|&nbsp; 
+                        <em>{{ job.start_date }} – {{ job.end_date }}</em></p>
+                        {% if job.description %}
+                            <p class="mb-0">{{ job.description }}</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </section>
+            {% endif %}
+
+            {% if education %}
+            <section class="mb-5">
+                <h4 class="border-bottom pb-2 mb-3">Education</h4>
+                {% for edu in education %}
+                    <div class="mb-3">
+                        <h6 class="mb-0">{{ edu.degree }}</h6>
+                        <p class="mb-0">{{ edu.institution }}</p>
+                        <small class="text-muted">{{ edu.start_year }} – {{ edu.end_year }}</small>
+                    </div>
+                {% endfor %}
+            </section>
+            {% endif %}
+
+            {% if skills %}
+            <section class="mb-5">
+                <h4 class="border-bottom pb-2 mb-3">Skills</h4>
+                <div>
+                    {% for skill in skills %}
+                        <span class="badge bg-primary me-2 mb-2 p-2 fs-6">
+                            {{ skill.name }}
+                            {% if skill.proficiency %}
+                                <small class="text-light">({{ skill.proficiency }})</small>
+                            {% endif %}
+                        </span>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

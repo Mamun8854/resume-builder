@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block title %}Create Resume{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Create Your Resume</h2>
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="card mb-4">
+            <div class="card-header">Basic Info</div>
+            <div class="card-body">
+                {{ form.as_p }}
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between">
+                <span>Education</span>
+                <button type="button" class="btn btn-sm btn-outline-primary" id="add-education">+ Add</button>
+            </div>
+            <div class="card-body" id="education-formset">
+                {{ education_formset.management_form }}
+                {% for form in education_formset %}
+                    <div class="education-form border p-3 position-relative mb-3 rounded">
+                        <button type="button" class="btn-close position-absolute top-0 end-0 remove-education"></button>
+                        {{ form.as_p }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between">
+                <span>Experience</span>
+                <button type="button" class="btn btn-sm btn-outline-primary" id="add-experience">+ Add</button>
+            </div>
+            <div class="card-body" id="experience-formset">
+                {{ experience_formset.management_form }}
+                {% for form in experience_formset %}
+                    <div class="experience-form border p-3 position-relative mb-3 rounded">
+                        <button type="button" class="btn-close position-absolute top-0 end-0 remove-experience"></button>
+                        {{ form.as_p }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between">
+                <span>Skills</span>
+                <button type="button" class="btn btn-sm btn-outline-primary" id="add-skill">+ Add</button>
+            </div>
+            <div class="card-body" id="skill-formset">
+                {{ skill_formset.management_form }}
+                {% for form in skill_formset %}
+                    <div class="skill-form border p-3 position-relative mb-3 rounded">
+                        <button type="button" class="btn-close position-absolute top-0 end-0 remove-skill"></button>
+                        {{ form.as_p }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-success">Save Resume</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(function () {
+    function handleFormset(prefix, className) {
+        let index = parseInt($(`#id_${prefix}-TOTAL_FORMS`).val());
+
+        $(`#add-${className}`).on('click', function () {
+            let $form = $(`#${className}-formset .${className}-form:first`).clone(false);
+            $form.find(':input[name]').each(function () {
+                let oldName = $(this).attr('name');
+                if (!oldName) return;
+                let newName = oldName.replace(/-\d+-/, `-${index}-`);
+                $(this).attr({
+                    name: newName,
+                    id: `id_${newName}`
+                }).val('');
+            });
+            $form.find('.is-invalid').removeClass('is-invalid');
+            $form.find('.invalid-feedback').remove();
+            $form.appendTo(`#${className}-formset`);
+            $(`#id_${prefix}-TOTAL_FORMS`).val(++index);
+        });
+
+        $(`#${className}-formset`).on('click', `.remove-${className}`, function () {
+            if ($(`#${className}-formset .${className}-form`).length > 1) {
+                $(this).closest(`.${className}-form`).remove();
+                index--;
+                $(`#id_${prefix}-TOTAL_FORMS`).val(index);
+            }
+        });
+    }
+
+    handleFormset('education_set', 'education');
+    handleFormset('experience_set', 'experience');
+    handleFormset('skill_set', 'skill');
+});
+</script>
+{% endblock %}
