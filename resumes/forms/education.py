@@ -1,8 +1,9 @@
-from django import forms
-from resumes.models import Education
+from django.forms import inlineformset_factory
+from resumes.models import Education, Resume
 
-class EducationForm(forms.ModelForm):
-    class Meta:
-        model = Education
-        fields = '__all__'
-        exclude = ['resume']
+EducationFormSet = inlineformset_factory(
+    Resume, Education,
+    fields=['institution', 'degree', 'start_year', 'end_year'],
+    extra=1,
+    can_delete=True
+)
